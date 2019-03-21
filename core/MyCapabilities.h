@@ -108,6 +108,8 @@
 #define MY_CAP_RADIO "L"
 #elif defined(MY_RS485)
 #define MY_CAP_RADIO "S"
+#elif defined(MY_CRESSON)
+#define MY_CAP_RADIO "C"
 #else
 #define MY_CAP_RADIO "-"
 #endif

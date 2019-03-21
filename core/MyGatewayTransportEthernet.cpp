@@ -171,6 +171,7 @@ bool gatewayTransportInit(void)
 	_w5100_spi_en(true);
 
 #if defined(MY_GATEWAY_ESP8266) || defined(MY_GATEWAY_ESP32)
+#if defined(MY_WIFI_SSID)
 	// Turn off access point
 	WiFi.mode(WIFI_STA);
 #if defined(MY_GATEWAY_ESP8266)
@@ -187,6 +188,7 @@ bool gatewayTransportInit(void)
 		GATEWAY_DEBUG(PSTR("GWT:TIN:CONNECTING...\n"));
 	}
 	GATEWAY_DEBUG(PSTR("GWT:TIN:IP: %s\n"), WiFi.localIP().toString().c_str());
+#endif /* End of MY_WIFI_SSID */
 #elif defined(MY_GATEWAY_LINUX)
 	// Nothing to do here
 #else

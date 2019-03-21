@@ -253,6 +253,10 @@
 //#define MY_RS485_HWSERIAL (Serial1)
 /** @}*/ // End of RS485SettingGrpPub group
 
+#ifndef MY_CRESSON_MAX_MESSAGE_LENGTH
+#define MY_CRESSON_MAX_MESSAGE_LENGTH (40)
+#endif
+
 /**
  * @defgroup RF24SettingGrpPub RF24
  * @ingroup RadioSettingGrpPub
@@ -2104,7 +2108,7 @@
 #endif
 
 // Enable sensor network "feature" if one of the transport types was enabled
-#if defined(MY_RADIO_RF24) || defined(MY_RADIO_NRF5_ESB) || defined(MY_RADIO_RFM69) || defined(MY_RADIO_RFM95) || defined(MY_RS485)
+#if defined(MY_RADIO_RF24) || defined(MY_RADIO_NRF5_ESB) || defined(MY_RADIO_RFM69) || defined(MY_RADIO_RFM95) || defined(MY_RS485) || defined(MY_CRESSON)
 #define MY_SENSOR_NETWORK
 #endif
 

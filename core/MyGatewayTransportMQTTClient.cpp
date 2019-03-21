@@ -55,11 +55,11 @@
 #define MY_MQTT_PASSWORD NULL
 #endif
 
-#if defined(MY_GATEWAY_ESP8266) || defined(MY_GATEWAY_ESP32)
-#if !defined(MY_WIFI_SSID)
-#error ESP8266/ESP32 MQTT gateway: MY_WIFI_SSID not defined!
-#endif
-#endif
+// #if defined(MY_GATEWAY_ESP8266) || defined(MY_GATEWAY_ESP32)
+// #if !defined(MY_WIFI_SSID)
+// #error ESP8266/ESP32 MQTT gateway: MY_WIFI_SSID not defined!
+// #endif
+// #endif
 
 #if defined MY_CONTROLLER_IP_ADDRESS
 #define _brokerIp IPAddress(MY_CONTROLLER_IP_ADDRESS)
@@ -247,6 +247,7 @@ bool gatewayTransportInit(void)
 	_MQTT_client.setCallback(incomingMQTT);
 
 #if defined(MY_GATEWAY_ESP8266) || defined(MY_GATEWAY_ESP32)
+#if defined(MY_WIFI_SSID)
 	// Turn off access point
 	WiFi.mode(WIFI_STA);
 #if defined(MY_GATEWAY_ESP8266)
@@ -258,6 +259,7 @@ bool gatewayTransportInit(void)
 	WiFi.config(_MQTT_clientIp, _gatewayIp, _subnetIp);
 #endif /* End of MY_IP_ADDRESS */
 	(void)WiFi.begin(MY_WIFI_SSID, MY_WIFI_PASSWORD, 0, MY_WIFI_BSSID);
+#endif /* End of MY_WIFI_SSID */
 #endif
 
 	gatewayTransportConnect();

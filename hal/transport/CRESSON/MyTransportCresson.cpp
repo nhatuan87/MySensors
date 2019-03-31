@@ -43,7 +43,7 @@ bool transportSend(const uint8_t to, const void* data, const uint8_t len, const 
 {
 	(void)noACK;	// not implemented
 	const char *datap = static_cast<char const *>(data);
-	cresson.destID = (uint16_t) to;
+	cresson.destID = (to == BROADCAST_ADDRESS) ? (uint16_t) BROADCAST_ID : (uint16_t) to;
 	for (uint8_t i=0; i<len; i++) {
 		cresson << datap[i];
 	}

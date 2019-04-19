@@ -10,142 +10,143 @@
 
 // Cresson Transport
 #if defined(MY_CRESSON_HWSERIAL)
-	HardwareSerial& _dev = MY_CRESSON_HWSERIAL;
-	#if defined(MY_CRESSON_POWER_PIN)
-	crstream<>		cresson(_dev, MY_CRESSON_POWER_PIN);
-	#else
-	crstream<>		cresson(_dev);
-	#endif
+    HardwareSerial& _dev = MY_CRESSON_HWSERIAL;
+    #if defined(MY_CRESSON_POWER_PIN)
+    crstream<>      cresson(_dev, MY_CRESSON_POWER_PIN);
+    #else
+    crstream<>      cresson(_dev);
+    #endif
 #else
-	SoftwareSerial 	_dev(MY_CRESSON_TX_PIN, MY_CRESSON_RX_PIN);
-	#if defined(MY_CRESSON_POWER_PIN)
-		crstream<SoftwareSerial>		cresson(_dev, MY_CRESSON_POWER_PIN);
-	#else
-		crstream<SoftwareSerial>		cresson(_dev);
-	#endif
+    SoftwareSerial  _dev(MY_CRESSON_TX_PIN, MY_CRESSON_RX_PIN);
+    #if defined(MY_CRESSON_POWER_PIN)
+        crstream<SoftwareSerial>        cresson(_dev, MY_CRESSON_POWER_PIN);
+    #else
+        crstream<SoftwareSerial>        cresson(_dev);
+    #endif
 #endif
 
 uint8_t _packet_len;
 int16_t _rcv_rssi;
-char _data[MY_CRESSON_MAX_MESSAGE_LENGTH];
+char    _data[MAX_MESSAGE_LENGTH];
+uint8_t _rcv_p;
 
 void cresson_onReceived() {
-	_rcv_rssi   = cresson.rssi();
+    _rcv_rssi   = cresson.rssi();
+    _packet_len = cresson.length();
 }
 
 void cresson_onReceiving() {
-	if (cresson.length() <= MY_CRESSON_MAX_MESSAGE_LENGTH) {
-		while (cresson.available()) cresson >> _data[_packet_len++];
-	}
+    while (cresson.available() and _rcv_p < MAX_MESSAGE_LENGTH) {
+        cresson >> _data[_rcv_p++];
+    }
 }
 
 bool transportSend(const uint8_t to, const void* data, const uint8_t len, const bool noACK)
 {
-	(void)noACK;	// not implemented
-	const char *datap = static_cast<char const *>(data);
-	cresson.destID = (to == BROADCAST_ADDRESS) ? (uint16_t) BROADCAST_ID : (uint16_t) to;
-	for (uint8_t i=0; i<len; i++) {
-		cresson << datap[i];
-	}
-	cresson.listen();
-	return true;
+    (void)noACK;    // not implemented
+    const char *datap = static_cast<char const *>(data);
+    cresson.destID = (to == BROADCAST_ADDRESS) ? (uint16_t) BROADCAST_ID : (uint16_t) to;
+    for (uint8_t i=0; i<len; i++) {
+        cresson << datap[i];
+    }
+    cresson.listen();
+    return true;
 }
 
 bool transportInit(void)
 {
-  	cresson.begin();
-	return cresson.isAlive();
+    cresson.begin();
+    return cresson.isAlive();
 }
 
 void transportSetAddress(const uint8_t address)
 {
-	cresson.selfID = (uint16_t) address;
-	cresson.writecmd(P_sysreg, 2, 0x01, address);
-	cresson.execute();
+    cresson.selfID = (uint16_t) address;
+    cresson.writecmd(P_sysreg, 2, 0x01, address);
+    cresson.execute();
 }
 
 uint8_t transportGetAddress(void)
 {
-	return cresson.selfID;
+    return cresson.selfID;
 }
 
 bool transportAvailable(void)
 {
-	return cresson.listen() and _packet_len > 0;
+    return cresson.listen() and _rcv_p > 0;
 }
 
 bool transportSanityCheck(void)
 {
-	// not implemented yet
-	return true;
+    // not implemented yet
+    return true;
 }
 
 uint8_t transportReceive(void* data)
 {
-	uint8_t len = _packet_len;
-	if (_packet_len > 0) {
-		memcpy(data,_data,_packet_len);
-		_packet_len = 0;
-	}
-	return len;
+    if (_packet_len > 0) {
+        memcpy(data,_data,_packet_len);
+    }
+    _rcv_p = 0;
+    return _packet_len;
 }
 
 void transportPowerDown(void)
 {
-	cresson.powerOff();
+    cresson.powerOff();
 }
 
 void transportPowerUp(void)
 {
-	cresson.powerOn();
+    cresson.powerOn();
 }
 void transportSleep(void)
 {
-	cresson.sleep();
+    cresson.sleep();
 }
 void transportStandBy(void)
 {
-	cresson.wakeup();
+    cresson.wakeup();
 }
 
 int16_t transportGetSendingRSSI(void)
 {
-	// not implemented
-	return INVALID_RSSI;
+    // not implemented
+    return INVALID_RSSI;
 }
 
 int16_t transportGetReceivingRSSI(void)
 {
-	return _rcv_rssi;
+    return _rcv_rssi;
 }
 
 int16_t transportGetSendingSNR(void)
 {
-	// not implemented
-	return INVALID_SNR;
+    // not implemented
+    return INVALID_SNR;
 }
 
 int16_t transportGetReceivingSNR(void)
 {
-	// not implemented
-	return INVALID_SNR;
+    // not implemented
+    return INVALID_SNR;
 }
 
 int16_t transportGetTxPowerPercent(void)
 {
-	// not implemented
-	return static_cast<int16_t>(100);
+    // not implemented
+    return static_cast<int16_t>(100);
 }
 
 int16_t transportGetTxPowerLevel(void)
 {
-	// not implemented
-	return static_cast<int16_t>(100);
+    // not implemented
+    return static_cast<int16_t>(100);
 }
 
 bool transportSetTxPowerPercent(const uint8_t powerPercent)
 {
-	// not possible
-	(void)powerPercent;
-	return false;
+    // not possible
+    (void)powerPercent;
+    return false;
 }

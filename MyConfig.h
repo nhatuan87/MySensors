@@ -253,10 +253,6 @@
 //#define MY_RS485_HWSERIAL (Serial1)
 /** @}*/ // End of RS485SettingGrpPub group
 
-#ifndef MY_CRESSON_MAX_MESSAGE_LENGTH
-#define MY_CRESSON_MAX_MESSAGE_LENGTH (40)
-#endif
-
 /**
  * @defgroup RF24SettingGrpPub RF24
  * @ingroup RadioSettingGrpPub

@@ -304,7 +304,7 @@ void stReadyTransition(void)
 // stReadyUpdate: monitors link
 void stReadyUpdate(void)
 {
-#if defined(MY_GATEWAY_FEATURE)
+#if defined(MY_GATEWAY_FEATURE) && !defined(MY_DISCOVER_DISABLED)
 	if (!_lastNetworkDiscovery ||
 	        (hwMillis() - _lastNetworkDiscovery > MY_TRANSPORT_DISCOVERY_INTERVAL_MS)) {
 		_lastNetworkDiscovery = hwMillis();
@@ -879,7 +879,7 @@ void transportProcessMessage(void)
 			if (type == I_FIND_PARENT_RESPONSE) {
 				return;	// no further processing required, do not forward
 			}
-#if !defined(MY_GATEWAY_FEATURE)
+#if !defined(MY_GATEWAY_FEATURE) && !defined(MY_DISCOVER_DISABLED)
 			if (type == I_DISCOVER_REQUEST) {
 				if (last == _transportConfig.parentNodeId) {
 					// random wait to minimize collisions
